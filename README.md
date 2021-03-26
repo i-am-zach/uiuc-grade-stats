@@ -1,3 +1,5 @@
+# UIUC Grade Statistics Dashboard
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
@@ -12,11 +14,21 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Future Features
+* Presets
+    * Create pre-rendered groupings of charts for specific majors
+        * Ex: CHEM 102/103, MATH 220 or 231, PHY 211, and RHET 105 for PREP students
+        * Should be button to add all courses to my courses or replace my courses with preset
+* Individual course pages
+    * Can be pre-rendered using `getStaticProps` and `getStaticPaths` but this will create a MASSIVE build.
+        * Viable option site is being hosted on a VPS
+    * Individual course pages can display more information about a specific course than the two charts on the my-course page.
+        * Histograms and sun-bursts for each professor in a course
+        * Compare distributions for different years
+            * How did the distribution of grades from 2020 compare to the distribution of grades in 2019?
+* Mobile compatibility
+    * Site is only designed for desktop in current state
+    * Implement collapsable side menu
 
 ## Learn More
 
@@ -26,9 +38,3 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
