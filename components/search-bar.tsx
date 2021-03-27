@@ -20,7 +20,6 @@ import Course from '../models/course';
 import * as d3 from 'd3';
 import { JSONCourseContext } from '../contexts';
 import { css } from '@emotion/react';
-import { IJSONCourse } from '../type';
 
 type SearchBarProps = {
   courses: { [key: string]: number[] };
@@ -28,7 +27,6 @@ type SearchBarProps = {
 };
 
 type SearchBarState = {
-  placeholder: string;
   options: string[];
   search: string;
   searchError: string;
@@ -39,16 +37,29 @@ type SearchItemProps = {
   option: string;
 };
 
+/**
+ *
+ * @param option string: A string representation of a course
+ *    Ex: MATH 286 or CS 173
+ * @returns
+ */
 const SearchItem = ({ option, gradesData }: SearchItemProps) => {
+  // The methods from the JSONCourseContext
   const { addCourse, removeCourse, courses } = useContext(JSONCourseContext);
+  // The hooks for the confirmation popup that shows after adding/removing a course
   const [isOpen, setIsOpen] = useState(false);
+  // Whether or not the course is included in the array of JSON Courses
   const [includes, setIncludes] = useState(false);
+  // Method called when the popup is closed
   const onClose = () => setIsOpen(false);
+  // Requried for a the chakra-ui popup
   const cancelRef = React.useRef();
   const [subject, number] = option.split(' ');
+  // The course model derived from the option
   const course = new Course(subject, parseInt(number), gradesData);
 
   useEffect(() => {
+    // Determines if the course is in the JSON Courses Array
     let found = false;
     for (const c of courses) {
       if (course.equals(c)) {
@@ -68,6 +79,7 @@ const SearchItem = ({ option, gradesData }: SearchItemProps) => {
       setIsOpen(true);
     }
   };
+
   return (
     <React.Fragment>
       <AlertDialog
@@ -86,8 +98,8 @@ const SearchItem = ({ option, gradesData }: SearchItemProps) => {
             </AlertDialogBody>
 
             <AlertDialogFooter textAlign="center">
-              <Button ref={cancelRef} onClick={onClose}>
-                Close
+              <Button ref={cancelRef} onClick={onClose} colorScheme="blue">
+                Okay
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -107,7 +119,9 @@ const SearchItem = ({ option, gradesData }: SearchItemProps) => {
       >
         <Text size="xl">{option}</Text>
         <Text fontWeight="semibold">{course.title}</Text>
-        <Link onClick={onLinkClick}>{includes ? `Remove` : `Add`} course</Link>
+        <Link onClick={onLinkClick} color={includes ? 'red.500' : 'blue.500'}>
+          {includes ? `Remove` : `Add`} course
+        </Link>
       </Box>
     </React.Fragment>
   );
@@ -118,9 +132,13 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     super(props);
 
     this.state = {
-      placeholder: '',
+      // An array of string representation of courses that match the current search term.
+      // Default to an empty array instead of displaying all the courses with an empty search for 
+      // performance reasons
       options: [],
+      // The value of the input
       search: '',
+      // An error message
       searchError: '',
     };
     this.onInputChange = this.onInputChange.bind(this);
@@ -133,9 +151,17 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
       search: newSearch,
     }));
 
+    /**
+     * Asychronously gets the updated coures options that match the search term
+     * The algoritithm for finding for matches is simplying returning every instance that the
+     * search term starts with (a "perfect" match). Therefore, this search DOES NOT account for the course title, only the
+     * coures subject and number.
+     */
     const updatedOptions = new Promise<string[]>((resolve, reject) => {
       const words: string[] = newSearch.split(' ');
+      // If the search contains more than three words, there will be no matches
       if (words.length >= 3) return [];
+      // Case for search terms and the second term is not whitespace
       if (words.length === 2 && words[1]) {
         const subject = words[0];
         const numPartial = words[1];
@@ -148,19 +174,26 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         }
         return resolve(output);
       }
+      // Case for search terms and the second term is whitespace
       if (words.length === 2 && !!!words[1]) {
         const subject = words[0];
         const numbers = this.props.courses[subject];
         return resolve(numbers.map((num) => subject + ' ' + num));
       }
+      // Case for a single, incomplete search term
+      // ex: EN when searching for ENG
+      // ex: MAT when searching for MATH
       if (words.length === 1) {
         if (!!!words[0]) return resolve([]);
-
         const subjectPartial = words[0];
         let output: string[] = [];
+
         const subjectMatches = Object.keys(
           this.props.courses,
         ).filter((subject) => subject.startsWith(subjectPartial));
+
+        // If there are more than ten subjects the match the search partial
+        // do not return anything because the search is too slow
         if (subjectMatches.length > 10) {
           return resolve([]);
         }
@@ -182,7 +215,6 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
             errorMessage = `No matches. Make sure to type the course's subject in all caps.`;
           }
         }
-        console.log(errorMessage);
         this.setState((state) => {
           return {
             ...state,
@@ -206,11 +238,12 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         box-shadow: 0 0 0 1px #3182ce;
       `,
     };
+
     return (
       <>
         <FormControl isInvalid={!!this.state.searchError}>
           <Input
-            placeholder={this.state.placeholder || 'Search for a course'}
+            placeholder={'Search for a course'}
             sx={{
               ':focus': {
                 fontSize: '1.5rem',

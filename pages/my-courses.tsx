@@ -8,7 +8,7 @@ import { Box, VStack } from '@chakra-ui/layout';
 import { getGradesData } from '../utils';
 import { JSONCourseContext } from '../contexts';
 import { Heading, Button, Text } from '@chakra-ui/react';
-import NextLink from "next/link";
+import NextLink from 'next/link';
 
 type HomePageProps = {
   gradesData: d3.DSVParsedArray<any>;
@@ -39,9 +39,17 @@ export default function Home({ gradesData }: HomePageProps) {
   }
   return (
     <Box p={5} textAlign="center">
-      <Heading size="2xl" pb={3}>Wow. So Empty...</Heading>
-      <Text fontSize="2xl" pb={3}>It seems you haven't added any courses yet.</Text>
-      <NextLink href="/search"><Button size="lg" colorScheme="blue">Add courses</Button></NextLink>
+      <Heading size="2xl" pb={3}>
+        Wow. So Empty...
+      </Heading>
+      <Text fontSize="2xl" pb={3}>
+        It seems you haven't added any courses yet.
+      </Text>
+      <NextLink href="/search">
+        <Button size="lg" colorScheme="blue">
+          Add courses
+        </Button>
+      </NextLink>
     </Box>
   );
 }

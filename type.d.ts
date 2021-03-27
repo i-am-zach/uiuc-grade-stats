@@ -10,5 +10,5 @@ type JSONCourseContextProps = {
     courses: IJSONCourse[]
     addCourse: (course: IJSONCourse) => void
     removeCourse: (course: IJSONCourse) => void
-    includes: (course: IJSONCourse) => boolean
+    clearCourses: () => void
 }

@@ -6,6 +6,16 @@ export const JSONCourseContext = createContext<Partial<JSONCourseContextProps>>(
 );
 
 export const JSONCourseProvider = ({ children }) => {
+  /**
+   * The JSON Course Provider exposes four things
+   *  1. courses: An array of JSON Courses with just contain the subject and number of a course
+   *  2. addCourse: A method which adds a course to the array
+   *  3. removeCoures: A method which removes a course from the array
+   *  4. clearCourses: A method which empties the courses array
+   * 
+   * The JSON Courses are synced with the browser's local storage so that a user can refresh the page and still
+   * have their courses show up
+   */
   useEffect(() => {
     const localCourses = JSON.parse(localStorage.getItem('courses'));
     if (!localCourses) {
@@ -17,7 +27,6 @@ export const JSONCourseProvider = ({ children }) => {
   const [courses, setCourses] = useState<IJSONCourse[]>([]);
 
   const addCourse = (course: IJSONCourse) => {
-    console.log('Adding course', course);
     setCourses((prevCourses) => {
       const newCourses = [...prevCourses, course];
       localStorage.setItem('courses', JSON.stringify(newCourses));
@@ -35,19 +44,13 @@ export const JSONCourseProvider = ({ children }) => {
     });
   };
 
-  const includes = (course: IJSONCourse) => {
-    for (const c of courses) {
-      if (c.subject === course.subject && c.number === course.number) {
-        return true;
-      }
-      return false;
-    }
+  const clearCourses = () => {
+    setCourses([]);
+    localStorage.setItem('courses', JSON.stringify([]));
   };
 
   return (
-    <JSONCourseContext.Provider
-      value={{ courses, addCourse, removeCourse, includes }}
-    >
+    <JSONCourseContext.Provider value={{ courses, addCourse, removeCourse, clearCourses }}>
       {children}
     </JSONCourseContext.Provider>
   );

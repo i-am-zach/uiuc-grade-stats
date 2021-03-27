@@ -1,7 +1,16 @@
 import Gradident from 'javascript-color-gradient';
 import * as d3 from 'd3';
 
-export const getGradesData = () => {
+/**
+ * Asynchronously fetches the csv data and converts it to an array of objects
+ * @returns a d3 DSVParsedArray promise
+ */
+export const getGradesData = (): Promise<d3.DSVParsedArray<any>> => {
+  /**
+   * Type coversion
+   * @param d
+   * @returns
+   */
   const conversor = (d) => {
     for (const key of Object.keys(d)) {
       if (!isNaN(d[key])) {
@@ -17,7 +26,19 @@ export const getGradesData = () => {
   );
 };
 
-export const getCoursesObject = (gradeData: d3.DSVParsedArray<any>) => {
+/**
+ *
+ * @param gradeData: the d3 parsed array fetched
+ * @returns an object that maps course subjects to an array of course numbers
+ * Example return:
+ * {
+ *  "CS": ["100", "101", "102", "173", "211",...],
+ *  "ECE": ["100", "101", "102", "173", "211",...],
+ * }
+ */
+export const getCoursesObject = (
+  gradeData: d3.DSVParsedArray<any>,
+): { [key: string]: string[] } => {
   let courses: { [key: string]: Set<string> } = {};
 
   for (let row of gradeData) {
@@ -37,6 +58,11 @@ export const getCoursesObject = (gradeData: d3.DSVParsedArray<any>) => {
   return output;
 };
 
+/**
+ *
+ * @param grade: the letter grade
+ * @returns a color representation of a grade calculated using a gradient
+ */
 export const getColorFromGrade = (grade: string) => {
   const colorGradient = new Gradident();
   const blue = '#0000ff';
@@ -61,10 +87,4 @@ export const getColorFromGrade = (grade: string) => {
   };
 
   return gradeToColorMap[grade];
-};
-
-export const sortObject = (obj: Object) => {
-  return Object.keys(obj)
-    .sort((prev, curr) => parseFloat(prev) - parseFloat(curr))
-    .reduce((res, key) => ((res[key] = obj[key]), res), {});
 };

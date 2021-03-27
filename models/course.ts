@@ -33,6 +33,11 @@ export default class Course {
   }
 
   static grade_to_gpa(grade: string): number {
+    /**
+     * CONVERTS A LETTER GRADE TO A GPA
+     *
+     * @returns number
+     */
     if (grade.length > 2) {
       return NaN;
     }
@@ -63,7 +68,11 @@ export default class Course {
     return NaN;
   }
 
-  private get_course_title() {
+  /**
+   * Gets the title of the course from the GPA data
+   * Called in the constructor
+   */
+  private get_course_title(): string {
     for (const row of this.data) {
       if (row['Number'] === this.number && row['Subject'] === this.subject) {
         return row['Course Title'];
@@ -71,6 +80,9 @@ export default class Course {
     }
   }
 
+  /**
+   * Reduces the grades dataset to only rows that matches the data
+   */
   private get_fitted_dataset(years: number[]) {
     return this.data.filter(
       (d) =>
@@ -80,7 +92,21 @@ export default class Course {
     );
   }
 
-  get_aggregate_data(years = [2020]) {
+  /**
+   * Returns an object that maps a letter grade to a number of students for the course
+   *
+   * @params years (number[]): The years to get the data from
+   *
+   * Example return type:
+   * {
+   *  "A+": 10,
+   *  "A": 9,
+   *  "A-": 3,
+   *  ...
+   *  "F": 0,
+   * }
+   */
+  get_aggregate_data(years = [2020]): { [key: string]: number } {
     const fittedDataset = this.get_fitted_dataset(years);
     let output: { [key: string]: number } = {};
     for (const grade of Course.possibleGrades) {
@@ -94,7 +120,21 @@ export default class Course {
     return output;
   }
 
-  get_aggregate_gpa(years = [2020]) {
+  /**
+   * Returns an object that maps a GPA to a number of students for the course
+   *
+   * @params years (number[]): The years to get the data from
+   *
+   * Example return type:
+   * {
+   *  4.0: 10,
+   *  3.67: 9,
+   *  3.33: 3,
+   *  ...
+   *  0: 0,
+   * }
+   */
+  get_aggregate_gpa(years = [2020]): { [key: number]: number } {
     const fittedDataset = this.get_fitted_dataset(years);
     let output: { [key: number]: number } = {};
     for (const grade of Course.possibleGrades) {
@@ -110,6 +150,9 @@ export default class Course {
     return output;
   }
 
+  /**
+   * Gets the total number of students that received grades from the course in the specified years
+   */
   get_n(years = [2020]) {
     const fittedDataset = this.get_fitted_dataset(years);
     let total = 0;
@@ -121,6 +164,18 @@ export default class Course {
     return total;
   }
 
+  /**
+   * Gets the data required for a Plotly sunburst chart
+   *
+   * See https://plotly.com/javascript/sunburst-charts/
+   * Example data:
+   * [{
+   *  type: "sunburst",
+   *  labels: ["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+   *  parents: ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
+   *  values:  [10, 14, 12, 10, 2, 6, 6, 4, 4],
+   * }]
+   */
   get_sunburst_data(years = [2020]) {
     let labels: string[] = [];
     let parents: string[] = [];
@@ -157,6 +212,16 @@ export default class Course {
     };
   }
 
+  /**
+   * See https://plotly.com/javascript/bar-charts/
+   * Example data:
+   * [{
+   *  type: "bar",
+   *  x: ['giraffes', 'orangutans', 'monkeys'],
+   *  y: [20, 14, 23],
+   *  color: ["red", "green", "blue"]
+   * }]
+   */
   get_barchart_data(years = [2020]) {
     const aggregateData = this.get_aggregate_data(years);
 
@@ -178,6 +243,9 @@ export default class Course {
     };
   }
 
+  /**
+   * Converts a Course class to a simple JSON representation used in the JSONCourseContext
+   */
   to_dict(): IJSONCourse {
     return {
       subject: this.subject,
@@ -185,6 +253,9 @@ export default class Course {
     };
   }
 
+  /**
+   * Determines if a course equals another Course or JSONCourse
+   */
   equals(c: IJSONCourse | Course) {
     return this.subject === c.subject && this.number === c.number;
   }
