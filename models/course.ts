@@ -24,12 +24,48 @@ export default class Course {
     'F',
   ];
 
+  static possibleGpas = [
+    0,
+    0.33,
+    0.67,
+    1,
+    1.33,
+    1.67,
+    2,
+    2.33,
+    2.67,
+    3,
+    3.33,
+    3.67,
+    4,
+  ];
+
   constructor(subject: string, number: number, data: d3.DSVParsedArray<any>) {
     this.subject = subject;
     this.number = number;
     this.shortName = subject + ' ' + number;
     this.data = data;
     this.title = this.get_course_title();
+  }
+
+  static gpa_to_grade(gpa: number): string {
+    const map = {
+      4: 'A',
+      3.67: 'A-',
+      3.33: 'B+',
+      3: 'B',
+      2.67: 'B-',
+      2.33: 'C+',
+      2: 'C',
+      1.67: 'C-',
+      1.33: 'D+',
+      1: 'D',
+      0.67: 'D-',
+      0.33: 'F',
+      0: 'F',
+    };
+
+    return map[gpa];
   }
 
   static grade_to_gpa(grade: string): number {
@@ -134,16 +170,16 @@ export default class Course {
    *  0: 0,
    * }
    */
-  get_aggregate_gpa(years = [2020]): { [key: number]: number } {
+  get_aggregate_gpa(years = [2020]): { [key: string]: number } {
     const fittedDataset = this.get_fitted_dataset(years);
-    let output: { [key: number]: number } = {};
+    let output: { [key: string]: number } = {};
     for (const grade of Course.possibleGrades) {
-      const gpa = Course.grade_to_gpa(grade);
+      const gpa = Course.grade_to_gpa(grade).toFixed(2);
       output[gpa] = 0;
     }
     for (let row of fittedDataset) {
       for (const grade of Course.possibleGrades) {
-        const gpa = Course.grade_to_gpa(grade);
+        const gpa = Course.grade_to_gpa(grade).toFixed(2);
         output[gpa] += row[grade];
       }
     }
@@ -177,39 +213,27 @@ export default class Course {
    * }]
    */
   get_sunburst_data(years = [2020]) {
-    let labels: string[] = [];
-    let parents: string[] = [];
-    let values: number[] = [];
-
-    let bucketData = {
-      As: 0,
-      Bs: 0,
-      Cs: 0,
-      Ds: 0,
-      Fs: 0,
-    };
-
     const aggregateData = this.get_aggregate_data(years);
 
-    for (const [grade, num_students] of Object.entries(aggregateData)) {
-      const parent = grade[0] + 's';
-      bucketData[parent] += num_students;
-      labels.push(grade);
-      parents.push(parent);
-      values.push(num_students);
-    }
-
-    for (const [parent, num_students] of Object.entries(bucketData)) {
-      labels.push(parent);
-      parents.push('');
-      values.push(num_students);
-    }
-
-    return {
-      labels,
-      values,
-      parents,
+    let data = {
+      name: 'main',
+      children: [],
     };
+
+    for (const [grade, numStudents] of Object.entries(aggregateData)) {
+      const parent = grade[0] + 's';
+      if (data.children.find((elem) => elem.name === parent)) {
+        // Last elem will be current grade
+        data.children[data.children.length - 1].children.push({
+          name: grade,
+          numStudents,
+        });
+      } else {
+        data.children.push({ name: parent, children: [] });
+      }
+    }
+
+    return data;
   }
 
   /**
@@ -223,24 +247,18 @@ export default class Course {
    * }]
    */
   get_barchart_data(years = [2020]) {
-    const aggregateData = this.get_aggregate_data(years);
+    const aggregateData = this.get_aggregate_gpa(years);
 
-    let x = [];
-    let y = [];
-    let color: string[] = [];
+    let data: { gpa: string; numStudents: number }[] = [];
 
-    for (const [grade, num_students] of Object.entries(aggregateData)) {
-      const gpa = Course.grade_to_gpa(grade);
-      x.push(gpa);
-      y.push(num_students);
-      color.push(getColorFromGrade(grade));
+    for (let [gpa, numStudents] of Object.entries(aggregateData)) {
+      data.push({
+        gpa: gpa,
+        numStudents: numStudents,
+      });
     }
 
-    return {
-      x,
-      y,
-      color,
-    };
+    return data;
   }
 
   /**

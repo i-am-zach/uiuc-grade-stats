@@ -1,5 +1,6 @@
 import Gradident from 'javascript-color-gradient';
 import * as d3 from 'd3';
+import Course from "./models/course";
 
 /**
  * Asynchronously fetches the csv data and converts it to an array of objects
@@ -71,20 +72,26 @@ export const getColorFromGrade = (grade: string) => {
   colorGradient.setMidpoint(13);
 
   const gradeToColorMap = {
-    'A+': colorGradient.getColor(1),
-    A: colorGradient.getColor(2),
-    'A-': colorGradient.getColor(3),
-    'B+': colorGradient.getColor(4),
-    B: colorGradient.getColor(5),
-    'B-': colorGradient.getColor(6),
-    'C+': colorGradient.getColor(7),
-    C: colorGradient.getColor(8),
-    'C-': colorGradient.getColor(9),
-    'D+': colorGradient.getColor(10),
-    D: colorGradient.getColor(11),
-    'D-': colorGradient.getColor(12),
-    F: colorGradient.getColor(13),
+    'A+': "#43A047",
+    A: "#4CAF50",
+    'A-': "#66BB6A",
+    'B+': "#00ACC1",
+    B: "#00BCD4",
+    'B-': "#26C6DA",
+    'C+': "#1E88E5",
+    C: "#2196F3",
+    'C-': "#42A5F5",
+    'D+': "#5E35B1",
+    D: "#673AB7",
+    'D-': "#7E57C2",
+    F: "#E91E63",
   };
 
   return gradeToColorMap[grade];
+};
+
+export const getColorFromGpa = (gpa: number) => {
+  const grade = Course.gpa_to_grade(gpa);
+
+  return getColorFromGrade(grade);
 };

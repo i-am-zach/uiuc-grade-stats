@@ -1,20 +1,16 @@
-import { useContext } from 'react';
 import Head from 'next/head';
 import { GetStaticProps } from 'next';
 import * as d3 from 'd3';
 import { Box } from '@chakra-ui/layout';
 import { getCoursesObject, getGradesData } from '../utils';
 import SearchBar from '../components/search-bar';
-import { JSONCourseContext } from '../contexts';
 
 type HomePageProps = {
   gradesData: d3.DSVParsedArray<any>;
   coursesObject: { [key: string]: number[] };
 };
 
-export default function Home({ gradesData, coursesObject }: HomePageProps) {
-  const { courses } = useContext(JSONCourseContext);
-
+export default function SearchPage({ gradesData, coursesObject }: HomePageProps) {
   return (
     <div>
       <Head>
