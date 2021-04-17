@@ -13,7 +13,8 @@ import {
   Box,
   Button,
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { AddIcon } from '@chakra-ui/icons';
+import { Link as RouterLink } from 'react-router-dom';
 
 type CourseComponentProps = {
   course: Course;
@@ -26,11 +27,11 @@ const CourseComponent: React.FC<CourseComponentProps> = ({ course, years }) => {
 
   const teachers = ['All', ...course.getTeachers(years)];
   return (
-    <Box pb="16">
-      <Heading size="xl" textAlign="center">
+    <Box pb="10">
+      <Heading size="xl" pt="3">
         {course.subject} {course.number}: {course.title}
       </Heading>
-      <FormControl maxW="48">
+      <FormControl maxW="48" pt="3">
         <FormLabel>Filter By Instructor</FormLabel>
         <Select
           value={currentTeacher}
@@ -107,21 +108,34 @@ export const Courses = () => {
         </Heading>
 
         <Box textAlign="center" pt="8">
-          <Heading size="md" fontWeight="semibold" pb="3">Oh no! You have no courses.</Heading>
-          <Link to="/search">
+          <Heading size="md" fontWeight="semibold" pb="3">
+            Oh no! You have no courses.
+          </Heading>
+          <RouterLink to="/search">
             <Button colorScheme="blue">Add Courses</Button>
-          </Link>
+          </RouterLink>
         </Box>
       </Box>
     );
   }
 
   return (
-    <Box p={4}>
-      <Heading size="3xl" textAlign="center" className="courses--heading">
+    <Box p={4} position="relative">
+      <Box pb="3">
+        <RouterLink to="/search">
+          <Button
+            leftIcon={<AddIcon />}
+            size="sm"
+            variant="outline"
+            colorScheme="blue"
+          >
+            Add Courses
+          </Button>
+        </RouterLink>
+      </Box>
+      <Heading size="3xl" pb="5">
         My Courses
       </Heading>
-
       <Grid templateColumns="100px 100px">
         <FormControl>
           <FormLabel>Start Year</FormLabel>
