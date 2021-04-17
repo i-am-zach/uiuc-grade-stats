@@ -2,6 +2,7 @@ import { Box, Text, Stack, Flex, Button } from '@chakra-ui/react';
 import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+// @ts-ignore
 import IlliniosLogo from '../uiuc-I.svg';
 
 const Navbar: React.FC = () => {
