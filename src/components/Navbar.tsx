@@ -1,7 +1,7 @@
-import { Box, Text, Stack, Flex, Button } from '@chakra-ui/react';
+import { Box, Text, Stack, Flex, Button, IconButton } from '@chakra-ui/react';
 import { CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 // @ts-ignore
 import IlliniosLogo from '../uiuc-I.svg';
 
@@ -29,17 +29,21 @@ const Navbar: React.FC = () => {
   );
 };
 
-const Logo: React.FC = (props) => {
+const Logo: React.FC = () => {
   return (
     <Flex align="center">
       <Box h="10" pr={3}>
         <img src={IlliniosLogo} alt="UIUC Logo" style={{ height: '100%' }} />
       </Box>
       <Box>
-        <Text fontSize="xl" fontWeight="bold">
-          UIUC Course Statistics
+        <RouterLink to="/">
+          <Text fontSize="xl" fontWeight="bold">
+            UIUC Course Statistics
+          </Text>
+        </RouterLink>
+        <Text fontSize="xs">
+          By <a href="https://i-am-zach.github.io/">Zach Lefkovitz</a>
         </Text>
-        <Text fontSize="xs">By Zach Lefkovitz</Text>
       </Box>
     </Flex>
   );
@@ -68,9 +72,9 @@ const MenuLinks: React.FC<{ isOpen: boolean }> = ({ isOpen }) => {
 
 const MenuItem: React.FC<{ to: string }> = ({ to, children }) => {
   return (
-    <Link to={to}>
+    <RouterLink to={to}>
       <Button variant="ghost">{children}</Button>
-    </Link>
+    </RouterLink>
   );
 };
 
@@ -79,9 +83,12 @@ const MenuToggle: React.FC<{ isOpen: boolean; toggle: Function }> = ({
   toggle,
 }) => {
   return (
-    <Box display={{ base: 'block', md: 'none' }} onClick={() => toggle()}>
-      {isOpen ? <CloseIcon /> : <HamburgerIcon />}
-    </Box>
+    <IconButton
+      display={{ base: 'block', md: 'none' }}
+      onClick={() => toggle()}
+      icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+      aria-label="Navigation menu"
+    />
   );
 };
 
