@@ -37,7 +37,7 @@ export default class Course {
     0.67,
     0.33,
     0.0,
-  ]
+  ];
 
   constructor(subject: string, number: number, data: d3.DSVParsedArray<any>) {
     this.subject = subject;
@@ -47,18 +47,18 @@ export default class Course {
     this.title = this.get_course_title();
   }
 
-  static grade_to_gpa(grade: string): number {
+  static grade_to_gpa(grade: string): string {
     /**
      * CONVERTS A LETTER GRADE TO A GPA
      *
      * @returns number
      */
     if (grade.length > 2) {
-      return NaN;
+      return 'NaN';
     }
 
-    if (grade === 'F') return 0;
-    if (grade === 'A+') return 4;
+    if (grade === 'F') return '0';
+    if (grade === 'A+') return '4';
 
     let gpa: number;
     switch (grade[0]) {
@@ -75,12 +75,47 @@ export default class Course {
         gpa = 1;
         break;
       default:
-        return NaN;
+        return 'NaN';
     }
-    if (grade.length === 1) return gpa;
-    if (grade[1] === '+') return gpa + 0.33;
-    if (grade[1] === '-') return gpa - 0.33;
-    return NaN;
+    if (grade.length === 1) return gpa.toFixed(2);
+    if (grade[1] === '+') return (gpa + 0.33).toFixed(2);
+    if (grade[1] === '-') return (gpa - 0.33).toFixed(2);
+    return 'NaN';
+  }
+
+  static gpa_to_grade(gpa: number): string {
+    let strGpa = gpa.toFixed(2);
+
+    const grades = [
+      'A',
+      'A-',
+      'B+',
+      'B',
+      'B-',
+      'C+',
+      'C',
+      'C-',
+      'D+',
+      'D',
+      'D-',
+      'F',
+    ];
+    const gpas = [
+      4,
+      3.67,
+      3.33,
+      3,
+      2.67,
+      2.33,
+      2,
+      1.67,
+      1.33,
+      1,
+      0.67,
+      0,
+    ].map((num) => num.toFixed(2));
+
+    return grades[gpas.indexOf(strGpa)];
   }
 
   /**
@@ -152,7 +187,7 @@ export default class Course {
    */
   getAggregateGpa(years = [2020]): { [key: number]: number } {
     const fittedDataset = this.get_fitted_dataset(years);
-    let output: { [key: number]: number } = {};
+    let output: { [key: string]: number } = {};
     for (const grade of Course.possibleGrades) {
       const gpa = Course.grade_to_gpa(grade);
       output[gpa] = 0;
