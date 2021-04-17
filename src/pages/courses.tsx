@@ -13,6 +13,7 @@ import {
   Box,
   Button,
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 type CourseComponentProps = {
   course: Course;
@@ -92,8 +93,27 @@ export const Courses = () => {
     setYears(newYears);
   }, [startYear, endYear]);
 
+  console.log('Courses.length', courses.length);
+
   if (!gradeData) {
     return <h1>Loading...</h1>;
+  }
+
+  if (courses.length === 0) {
+    return (
+      <Box p={4}>
+        <Heading size="3xl" textAlign="center" className="courses--heading">
+          My Courses
+        </Heading>
+
+        <Box textAlign="center" pt="8">
+          <Heading size="md" fontWeight="semibold" pb="3">Oh no! You have no courses.</Heading>
+          <Link to="/search">
+            <Button colorScheme="blue">Add Courses</Button>
+          </Link>
+        </Box>
+      </Box>
+    );
   }
 
   return (

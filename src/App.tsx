@@ -21,7 +21,7 @@ function App() {
                   <SearchPage />
                 </Route>
                 <Route exact path="/">
-                  <Home />
+                  <Courses />
                 </Route>
                 <Route path="*">
                   <ErrorPage />
