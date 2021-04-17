@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { Courses, Home, ErrorPage, SearchPage } from './pages';
+import { Courses, ErrorPage, SearchPage } from './pages';
 import { CourseProvider, GradeDataProvider } from './context';
 import { ChakraProvider, Box } from '@chakra-ui/react';
 import Navbar from './components/Navbar';
