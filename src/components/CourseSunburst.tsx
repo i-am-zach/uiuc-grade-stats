@@ -2,8 +2,14 @@ import React from 'react';
 import Plot from 'react-plotly.js';
 import Course from '../models/course';
 
-const CourseSunburst: React.FC<{ course: Course }> = ({ course }) => {
-  const data = course.getAggregateData();
+type CourseSunburstProps = {
+  course: Course;
+  years: number[];
+  teacher: 'All' | string;
+};
+
+const CourseSunburst: React.FC<CourseSunburstProps> = ({ course, years, teacher }) => {
+  const data = course.getAggregateData(years, teacher);
 
   const parentsData: { [key: string]: number } = {
     As: 0,
@@ -33,6 +39,7 @@ const CourseSunburst: React.FC<{ course: Course }> = ({ course }) => {
 
   return (
     <Plot
+      style={{ width: '100%', height: '100%' }}
       data={[
         {
           type: 'sunburst',

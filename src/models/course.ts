@@ -134,13 +134,15 @@ export default class Course {
   /**
    * Reduces the grades dataset to only rows that matches the data
    */
-  private get_fitted_dataset(years: number[]) {
-    return this.data.filter(
+  private get_fitted_dataset(years: number[], teacher = 'All') {
+    const dataset = this.data.filter(
       (d) =>
         d['Subject'] === this.subject &&
         d['Number'] === this.number &&
         years.includes(d['Year']),
     );
+    if (teacher === 'All') return dataset;
+    return dataset.filter((d) => d['Primary Instructor'] === teacher);
   }
 
   /**
@@ -157,8 +159,8 @@ export default class Course {
    *  "F": 0,
    * }
    */
-  getAggregateData(years = [2020]): { [key: string]: number } {
-    const fittedDataset = this.get_fitted_dataset(years);
+  getAggregateData(years = [2020], teacher = 'All'): { [key: string]: number } {
+    const fittedDataset = this.get_fitted_dataset(years, teacher);
     let output: { [key: string]: number } = {};
     for (const grade of Course.possibleGrades) {
       output[grade] = 0;
@@ -185,8 +187,8 @@ export default class Course {
    *  0: 0,
    * }
    */
-  getAggregateGpa(years = [2020]): { [key: number]: number } {
-    const fittedDataset = this.get_fitted_dataset(years);
+  getAggregateGpa(years = [2020], teacher = 'All'): { [key: number]: number } {
+    const fittedDataset = this.get_fitted_dataset(years, teacher);
     let output: { [key: string]: number } = {};
     for (const grade of Course.possibleGrades) {
       const gpa = Course.grade_to_gpa(grade);
@@ -215,52 +217,13 @@ export default class Course {
     return total;
   }
 
-  /**
-   * Gets the data required for a Plotly sunburst chart
-   *
-   * See https://plotly.com/javascript/sunburst-charts/
-   * Example data:
-   * [{
-   *  type: "sunburst",
-   *  labels: ["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
-   *  parents: ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
-   *  values:  [10, 14, 12, 10, 2, 6, 6, 4, 4],
-   * }]
-   */
-  get_sunburst_data(years = [2020]) {
-    let labels: string[] = [];
-    let parents: string[] = [];
-    let values: number[] = [];
-
-    let bucketData: { [key: string]: number } = {
-      As: 0,
-      Bs: 0,
-      Cs: 0,
-      Ds: 0,
-      Fs: 0,
-    };
-
-    const aggregateData = this.getAggregateData(years);
-
-    for (const [grade, num_students] of Object.entries(aggregateData)) {
-      const parent = grade[0] + 's';
-      bucketData[parent] += num_students;
-      labels.push(grade);
-      parents.push(parent);
-      values.push(num_students);
+  getTeachers(years = [2020]): string[] {
+    const dataset = this.get_fitted_dataset(years);
+    let teachers = new Set<string>();
+    for (let row of dataset) {
+      teachers.add(row['Primary Instructor']);
     }
-
-    for (const [parent, num_students] of Object.entries(bucketData)) {
-      labels.push(parent);
-      parents.push('');
-      values.push(num_students);
-    }
-
-    return {
-      labels,
-      values,
-      parents,
-    };
+    return Array.from(teachers);
   }
 
   /**

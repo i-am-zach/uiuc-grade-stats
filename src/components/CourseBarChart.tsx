@@ -3,8 +3,14 @@ import Plot from 'react-plotly.js';
 import Course from '../models/course';
 import { getColorFromGPA } from '../utils';
 
-const CourseBarChart: React.FC<{ course: Course }> = ({ course }) => {
-  const data = course.getAggregateGpa();
+type CourseBarChartProps = {
+  course: Course;
+  years: number[];
+  teacher: "All" | string;
+};
+
+const CourseBarChart: React.FC<CourseBarChartProps> = ({ course, years, teacher }) => {
+  const data = course.getAggregateGpa(years, teacher);
 
   let x: number[] = [];
   let y: number[] = [];
@@ -18,11 +24,13 @@ const CourseBarChart: React.FC<{ course: Course }> = ({ course }) => {
 
   return (
     <Plot
+      style={{ width: '100%', height: '100%' }}
       data={[
         {
           type: 'bar',
           x: x,
           y: y,
+          domain: { x: [0, 4] },
           marker: {
             color: color,
           },
