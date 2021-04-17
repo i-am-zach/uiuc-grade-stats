@@ -1,40 +1,35 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import { Courses, Home, ErrorPage } from './pages';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { Courses, Home, ErrorPage, SearchPage } from './pages';
 import { CourseProvider, GradeDataProvider } from './context';
+import { ChakraProvider, Box } from '@chakra-ui/react';
+import Navbar from './components/Navbar';
 
 function App() {
   return (
     <CourseProvider>
       <GradeDataProvider>
-        <Router>
-          <div>
-            <nav>
-              <ul>
-                <li>
-                  <Link to="/">Home</Link>
-                </li>
-                <li>
-                  <Link to="/my-courses">My Courses</Link>
-                </li>
-                <li>
-                  <Link to="/search">Search Courses</Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <Switch>
-            <Route path="/my-courses">
-              <Courses />
-            </Route>
-            <Route exact path="/">
-              <Home />
-            </Route>
-            <Route path="*">
-              <ErrorPage />
-            </Route>
-          </Switch>
-        </Router>
+        <ChakraProvider>
+          <Box>
+            <Router>
+              <Navbar />
+              <Switch>
+                <Route path="/my-courses">
+                  <Courses />
+                </Route>
+                <Route path="/search">
+                  <SearchPage />
+                </Route>
+                <Route exact path="/">
+                  <Home />
+                </Route>
+                <Route path="*">
+                  <ErrorPage />
+                </Route>
+              </Switch>
+            </Router>
+          </Box>
+        </ChakraProvider>
       </GradeDataProvider>
     </CourseProvider>
   );

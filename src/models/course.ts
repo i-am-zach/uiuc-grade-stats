@@ -223,6 +223,7 @@ export default class Course {
     for (let row of dataset) {
       teachers.add(row['Primary Instructor']);
     }
+
     return Array.from(teachers);
   }
 

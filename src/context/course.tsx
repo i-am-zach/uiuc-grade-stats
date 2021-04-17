@@ -6,19 +6,21 @@ export interface IJSONCourse {
 }
 
 export type CourseContextType = {
-  courses: IJSONCourse[],
-  addCourse: (course: IJSONCourse) => void,
-  removeCourse: (course: IJSONCourse) => void,
-}
+  courses: IJSONCourse[];
+  addCourse: (course: IJSONCourse) => void;
+  removeCourse: (course: IJSONCourse) => void;
+};
 
-export const CourseContext = React.createContext<Partial<CourseContextType>>(
-  { courses: [], },
+let localCourses: IJSONCourse[] = JSON.parse(
+  localStorage.getItem('courses') || '[]',
 );
+export const CourseContext = React.createContext<CourseContextType>({
+  courses: localCourses,
+  addCourse: (c) => null,
+  removeCourse: (c) => null
+});
 
 export const CourseProvider: React.FC = ({ children }) => {
-  let localCourses: IJSONCourse[] = JSON.parse(
-    localStorage.getItem('courses') || '[]',
-  );
   const [courses, setCourses] = React.useState<IJSONCourse[]>(localCourses);
 
   const addCourse = (course: IJSONCourse) => {

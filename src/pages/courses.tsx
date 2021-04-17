@@ -1,9 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { CourseContext, GradeDataContext } from '../context';
 import Course from '../models/course';
-import '../css/courses.css';
 import CourseBarChart from '../components/CourseBarChart';
 import CourseSunburst from '../components/CourseSunburst';
+import {
+  FormControl,
+  FormLabel,
+  SimpleGrid,
+  Heading,
+  Select,
+  Grid,
+  Box,
+  Button,
+} from '@chakra-ui/react';
 
 type CourseComponentProps = {
   course: Course;
@@ -12,39 +21,50 @@ type CourseComponentProps = {
 
 const CourseComponent: React.FC<CourseComponentProps> = ({ course, years }) => {
   const [currentTeacher, setCurrentTeacher] = useState('All');
+  const { removeCourse } = useContext(CourseContext);
 
   const teachers = ['All', ...course.getTeachers(years)];
   return (
-    <div>
-      <h1>
+    <Box pb="16">
+      <Heading size="xl" textAlign="center">
         {course.subject} {course.number}: {course.title}
-      </h1>
-      <label>Filter by Instructor</label>
-      <select
-        value={currentTeacher}
-        onChange={(e) => setCurrentTeacher(e.target.value)}
-      >
-        {teachers.map((teacher) => (
-          <option value={teacher}>{teacher}</option>
-        ))}
-      </select>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-        <div style={{ height: '500px', width: '100%' }}>
+      </Heading>
+      <FormControl maxW="48">
+        <FormLabel>Filter By Instructor</FormLabel>
+        <Select
+          value={currentTeacher}
+          onChange={(e) => setCurrentTeacher(e.target.value)}
+        >
+          {teachers.map((teacher) => (
+            <option value={teacher}>{teacher}</option>
+          ))}
+        </Select>
+      </FormControl>
+      <SimpleGrid columns={{ base: 1, lg: 2 }} spacing="8">
+        <Box w="full" h="500px">
           <CourseBarChart
             course={course}
             years={years}
             teacher={currentTeacher}
           />
-        </div>
-        <div style={{ height: '500px', width: '100%' }}>
+        </Box>
+        <Box w="full" h="500px">
           <CourseSunburst
             course={course}
             years={years}
             teacher={currentTeacher}
           />
-        </div>
-      </div>
-    </div>
+        </Box>
+      </SimpleGrid>
+      <Box display="flex" alignItems="center" justifyContent="center" pt="4">
+        <Button
+          colorScheme="red"
+          onClick={() => removeCourse(course.to_dict())}
+        >
+          Remove {course.shortName}
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
@@ -77,35 +97,41 @@ export const Courses = () => {
   }
 
   return (
-    <div>
-      <h1 className="courses--heading">My Courses</h1>
+    <Box p={4}>
+      <Heading size="3xl" textAlign="center" className="courses--heading">
+        My Courses
+      </Heading>
 
-      <form>
-        <label htmlFor="start-year">Start Year</label>
-        <select
-          id="start-year"
-          value={startYear}
-          onChange={(e) => setStartYear(+e.target.value)}
-        >
-          {yearOptions.map((year) => (
-            <option value={year}>{year}</option>
-          ))}
-        </select>
-        <label htmlFor="end-year">End Year</label>
-        <select
-          id="start-year"
-          value={endYear}
-          onChange={(e) => setEndYear(+e.target.value)}
-        >
-          {yearOptions.map((year) => (
-            <option value={year}>{year}</option>
-          ))}
-        </select>
-      </form>
+      <Grid templateColumns="100px 100px">
+        <FormControl>
+          <FormLabel>Start Year</FormLabel>
+          <Select
+            id="start-year"
+            value={startYear}
+            onChange={(e) => setStartYear(+e.target.value)}
+          >
+            {yearOptions.map((year) => (
+              <option value={year}>{year}</option>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl>
+          <FormLabel>End Year</FormLabel>
+          <Select
+            id="start-year"
+            value={endYear}
+            onChange={(e) => setEndYear(+e.target.value)}
+          >
+            {yearOptions.map((year) => (
+              <option value={year}>{year}</option>
+            ))}
+          </Select>
+        </FormControl>
+      </Grid>
       {courses?.map((course) => {
         const c = new Course(course.subject, course.number, gradeData);
-        return <CourseComponent course={c} years={years} />;
+        return <CourseComponent course={c} years={years} key={c.shortName} />;
       })}
-    </div>
+    </Box>
   );
 };

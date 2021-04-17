@@ -59,3 +59,36 @@ export const getColorFromGPA = (gpa: number) => {
   const grade = Course.gpa_to_grade(gpa);
   return getColorFromGrade(grade);
 };
+
+/**
+ *
+ * @param gradeData: the d3 parsed array fetched
+ * @returns an object that maps course subjects to an array of course numbers
+ * Example return:
+ * {
+ *  "CS": ["100", "101", "102", "173", "211",...],
+ *  "ECE": ["100", "101", "102", "173", "211",...],
+ * }
+ */
+ export const getCoursesObject = (
+  gradeData: d3.DSVParsedArray<any>,
+): { [key: string]: string[] } => {
+  let courses: { [key: string]: Set<string> } = {};
+
+  for (let row of gradeData) {
+    const subject = row['Subject'];
+    if (Object.keys(courses).includes(subject)) {
+      courses[subject].add(row['Number']);
+    } else {
+      courses[subject] = new Set();
+      courses[subject].add(row['Number']);
+    }
+  }
+
+  let output: { [key: string]: Array<string> } = {};
+  for (let key of Object.keys(courses)) {
+    output[key] = Array.from(courses[key]);
+  }
+  return output;
+};
+

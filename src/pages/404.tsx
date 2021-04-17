@@ -1,9 +1,10 @@
-import React from 'react'
+import { Box, Heading } from '@chakra-ui/react';
+import React from 'react';
 
 export const ErrorPage = () => {
-    return (
-        <div>
-            <h1>404: Page Not Found</h1>
-        </div>
-    )
-}
+  return (
+    <Box>
+      <Heading textAlign="center">404: Page Not Found</Heading>
+    </Box>
+  );
+};
